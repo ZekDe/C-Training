@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-void display_hexchar(const char* buf, size_t size, size_t line_num)
+void DisplayHexchar(const char* buf, size_t size, size_t line_num)
 {
 	size_t i, j, remainder;
 	size_t idx_buf;
