@@ -7,6 +7,8 @@
 #define IS_FILE_ATTR()	(wfd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? "<DIR>" : ""
 
 void ErrorHandler(void);
+void WalkDir_Example(int argc, char* argv[]);
+void DisplayHexChar_Example(void);
 
 uint8_t o_fopen;
 
@@ -22,13 +24,27 @@ BOOL callback_walkdir(const WIN32_FIND_DATA *wfd, int level)
 
 int main(int argc, char *argv[])
 {
-	/*if (argc != 2)
+	
+	//WalkDir_Example(argc, argv);
+	DisplayHexChar_Example();
+
+
+	return 0;
+}
+
+
+void WalkDir_Example(int argc, char* argv[])
+{
+	if (argc != 2)
 	{
 		fprintf(stderr, "enter 2 argument..\n");
-			exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
-	WalkDir(argv[1], callback_walkdir); */
+	WalkDir(argv[1], callback_walkdir);
+}
 
+void DisplayHexChar_Example(void)
+{
 	FILE* f;
 	char buf[BUFSIZ];
 	int ch;
@@ -37,7 +53,7 @@ int main(int argc, char *argv[])
 
 	o_fopen = ((f = fopen("test.txt", "r+")) == NULL);
 	ErrorHandler();
-	
+
 	setbuf(f, buf);
 
 	ch = fgetc(f);
@@ -45,9 +61,8 @@ int main(int argc, char *argv[])
 	display_hexchar(buf, BUFSIZ, 16);
 
 	fclose(f);
-
-	return 0;
 }
+
 
 void ErrorHandler(void)
 {
