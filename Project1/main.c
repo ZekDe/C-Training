@@ -4,6 +4,7 @@
 #include "stdint.h"
 #include "display_hexchar.h"
 #include <stdbool.h>
+#include "utils.h"
 
 #define IS_FILE()	(wfd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? "<DIR>" : ""
 
@@ -11,6 +12,10 @@
 void WalkDir_Example(int argc, char* argv[]);
 void DisplayHexChar_Example(void);
 void GetStdHandle_Example(void);
+void Redirect_stdout_Example(void);
+void getchar_Example(void);
+void fgetc_Example(void);
+void gets_s_Example(void);
 
 
 bool Callback_WalkDir(const WIN32_FIND_DATA* wfd, int level);
@@ -29,6 +34,12 @@ int main(int argc, char *argv[])
 	//WalkDir_Example(argc, argv);
 	//DisplayHexChar_Example();
 	//GetStdHandle_Example();
+	//Redirect_stdout_Example();
+	//getchar_Example();
+	//fgetc_Example();
+	//gets_s_Example();
+
+
 
 	return 0;
 }
@@ -81,6 +92,60 @@ void GetStdHandle_Example(void)
 	if (!WriteFile(hstdout, buf, dw_read, &dw_write, NULL))
 		ExitSys("WriteFile");
 }
+
+void Redirect_stdout_Example(void)
+{
+	FILE* f;
+	int i;
+
+	if ((f = freopen("test.txt", "w", stdout)) == NULL) // stdout has been closed now
+	{
+		fprintf(stderr, "freopen!..\n");
+		exit(EXIT_FAILURE);
+	}
+
+	for (i = 0; i < 10; ++i)
+		printf("%d\n", i);
+
+	fclose(f);
+}
+
+void getchar_Example(void)
+{
+	int ch;
+
+	ch = getchar();
+	printf("%c\n", ch);
+	// line buffer and EOF effect
+	while ((ch = getchar()) != '\n' && ch != EOF)
+		;
+
+	ch = getchar();
+	printf("%c\n", ch);
+
+
+}
+
+void fgetc_Example(void)
+{
+	int ch;
+
+	// line buffer causes this effect
+	while ((ch = fgetc(stdin)) != EOF)
+	{
+		printf("%c", ch);
+		//putchar(ch);
+	}
+
+}
+
+void gets_s_Example(void)
+{
+	char s[100];
+	puts(my_gets_s(s, 100));
+}
+
+
 
 
 
