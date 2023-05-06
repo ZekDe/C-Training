@@ -17,6 +17,7 @@ char* my_gets_s(char* str, size_t size)
 
 	char* s;
 
+	// eliminate \n
 	if (((s = fgets(str, size, stdin)) != NULL) && ((s = strchr(str, '\n')) != NULL))
 	{
 		*s = '\0';
