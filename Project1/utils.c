@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "utils.h"
 
 char* my_gets_s(char* str, size_t size)
 {
@@ -17,11 +18,22 @@ char* my_gets_s(char* str, size_t size)
 
 	char* s;
 
-	// eliminate \n
-	if (((s = fgets(str, size, stdin)) != NULL) && ((s = strchr(str, '\n')) != NULL))
+	if ((fgets(str, size, stdin)) == NULL)
+	{
+		return NULL;
+	}
+	if ((s = strchr(str, '\n')) != NULL) // eliminate \n 
 	{
 		*s = '\0';
 	}
 
 	return str;
+}
+
+void clean_stdin_buff(void)
+{
+	int ch;
+
+	while ((ch = getchar()) != '\n' && ch != EOF)
+		;
 }

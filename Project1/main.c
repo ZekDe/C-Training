@@ -140,8 +140,8 @@ void fgetc_Example(void)
 
 void gets_s_Example(void)
 {
-	char s[100];
-	puts(my_gets_s(s, 100));
+	char s[50];
+	puts(my_gets_s(s, 50));
 }
 
 
