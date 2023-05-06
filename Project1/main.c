@@ -8,7 +8,7 @@
 
 #define IS_FILE()	(wfd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? "<DIR>" : ""
 
-
+/* Small Talk */
 void WalkDir_Example(int argc, char* argv[]);
 void DisplayHexChar_Example(void);
 void GetStdHandle_Example(void);
@@ -18,6 +18,7 @@ void fgetc_Example(void);
 void gets_s_Example(void);
 void Menu_Example(void);
 void DateTime_Example(void);
+
 
 
 int APP_DispMenu(void);
@@ -42,7 +43,8 @@ int main(int argc, char *argv[])
 	//fgetc_Example();
 	//gets_s_Example();
 	//Menu_Example();
-	DateTime_Example();
+	//DateTime_Example();
+
 
 
 
@@ -127,7 +129,6 @@ void getchar_Example(void)
 
 	ch = getchar();
 	printf("%c\n", ch);
-
 }
 
 void fgetc_Example(void)
@@ -138,7 +139,6 @@ void fgetc_Example(void)
 	while ((ch = fgetc(stdin)) != EOF)
 	{
 		printf("%c", ch);
-		//putchar(ch);
 	}
 
 }
@@ -215,7 +215,6 @@ void DateTime_Example(void)
 	}
 	
 }
-
 
 
 
