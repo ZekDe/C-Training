@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 	//Redirect_stdout_Example();
 	//getchar_Example();
 	//fgetc_Example();
-	//gets_s_Example();
+	gets_s_Example();
 
 
 
@@ -122,7 +122,6 @@ void getchar_Example(void)
 
 	ch = getchar();
 	printf("%c\n", ch);
-
 
 }
 
