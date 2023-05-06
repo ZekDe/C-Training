@@ -16,8 +16,11 @@ void Redirect_stdout_Example(void);
 void getchar_Example(void);
 void fgetc_Example(void);
 void gets_s_Example(void);
+void Menu_Example(void);
+void DateTime_Example(void);
 
 
+int APP_DispMenu(void);
 bool Callback_WalkDir(const WIN32_FIND_DATA* wfd, int level);
 void APP_ErrorHandler(void);
 static void ExitSys(LPCSTR lpszMsg);
@@ -37,7 +40,9 @@ int main(int argc, char *argv[])
 	//Redirect_stdout_Example();
 	//getchar_Example();
 	//fgetc_Example();
-	gets_s_Example();
+	//gets_s_Example();
+	//Menu_Example();
+	DateTime_Example();
 
 
 
@@ -144,8 +149,72 @@ void gets_s_Example(void)
 	puts(my_gets_s(s, 50));
 }
 
+void Menu_Example(void)
+{
+	int option;
+
+	for (;;) 
+	{
+		option = APP_DispMenu();
+
+		switch (option)
+		{
+		case 1:
+			printf("Perform 1\n\n");
+			break;
+		case 2:
+			printf("Perform 2\n\n");
+			break;
+		case 3:
+			return;
+			break;
+		default:
+			printf("No Section\n\n");
+		}
+	}
+}
 
 
+int APP_DispMenu(void)
+{
+	int option;
+
+	printf("1) Section1\n");
+	printf("2) Section2\n");
+	printf("3) Exit\n\n");
+	
+	printf("Selection:");
+
+	if (scanf("%d", &option) == 0) 
+	{
+		clean_stdin_buff(); // clean stdin buffer to prevent malfunction
+		return 0;
+	}
+
+	return option;
+}
+
+void DateTime_Example(void)
+{
+	int day, month, year;
+	int res;
+
+	printf("dd/mm/yy: ");
+	fflush(stdin);
+
+	res = scanf("%d/%d/%d", &day, &month, &year);
+
+	if (res == 3)
+	{
+		printf("%d-%d-%d\n", day, month, year);
+	}
+	else
+	{
+		clean_stdin_buff();
+		printf("invalid input!\n");
+	}
+	
+}
 
 
 
