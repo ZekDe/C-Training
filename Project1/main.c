@@ -18,6 +18,13 @@ void fgetc_Example(void);
 void gets_s_Example(void);
 void Menu_Example(void);
 void DateTime_Example(void);
+void GetCurrentDirectory_Example(void);
+void GetEnvironmentVariable_Example(void);
+void SetEnvironmentVariable_Example(void);
+void putenv_Exampe(void);
+void GetEnvironmentString_Example(void);
+void getenv_Example(void);
+void CreateProcessExample(void);
 
 
 
@@ -44,8 +51,13 @@ int main(int argc, char *argv[])
 	//gets_s_Example();
 	//Menu_Example();
 	//DateTime_Example();
-
-
+	//GetCurrentDirectory_Example();
+	//GetEnvironmentVariable_Example();
+	//SetEnvironmentVariable_Example();
+	//putenv_Exampe();
+	//GetEnvironmentString_Example();
+	//getenv_Example();
+	CreateProcessExample();
 
 
 	return 0;
@@ -215,6 +227,139 @@ void DateTime_Example(void)
 	}
 	
 }
+
+
+void GetCurrentDirectory_Example(int argc, char* argv[])
+{
+	char cwd[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH, cwd);
+	printf("%s\n", cwd);
+}
+
+
+void GetEnvironmentVariable_Example(void)
+{
+	enum{SIZE = 4096};
+	char arr[SIZE];
+	DWORD dw_res;
+	if (((dw_res = GetEnvironmentVariable("home", arr, SIZE)) == 0) || (dw_res > SIZE))
+	{
+		ExitSys("GetEnvironmentVariable");
+	}
+	
+	printf("%s\n", arr);
+}
+
+void SetEnvironmentVariable_Example(void)
+{
+	enum { SIZE = 4096 };
+	char arr[SIZE];
+	DWORD dw_res;
+
+	if (!SetEnvironmentVariable("CITY", "Bursa"))
+	{
+		ExitSys("SetEnvironmentVariable");
+	}
+
+	if (((dw_res = GetEnvironmentVariable("CITY", arr, SIZE)) == 0) || (dw_res > SIZE))
+	{
+		ExitSys("GetEnvironmentVariable");
+	}
+
+	printf("%s\n", arr);
+}
+
+void putenv_Exampe(void)
+{
+	char* env;
+	
+	if (_putenv("CITY=Bursa") == -1)
+	{
+		ExitSys("putenv");
+	}
+		
+
+	if ((env = getenv("CITY")) == NULL) 
+	{
+		fprintf(stderr, "CITY!..\n");
+		exit(EXIT_FAILURE);
+	}
+	printf("%s",env);
+}
+
+void GetEnvironmentString_Example(void)
+{
+	LPCH envStr;
+
+	if ((envStr = GetEnvironmentStrings()) == NULL) 
+	{
+		fprintf(stderr, "GetEnvironmentStrings\n");
+		exit(EXIT_FAILURE);
+	}
+
+	while (*envStr != '\0') {
+		puts(envStr);
+		envStr += strlen(envStr) + 1;
+	}
+
+}
+
+void getenv_Example(void)
+{
+	char* val;
+	char path[4096];
+	FILE* f;
+
+	char* env;
+
+	//if (_putenv("DATADIR=C:\\Users\\Duatepe\\Desktop") == -1) // or create a environment variable
+	//{
+	//	ExitSys("putenv");
+	//}
+
+
+	if ((val = getenv("DATADIR")) != NULL)
+	{
+		sprintf(path, "%s\\%s", val, "x.dat");
+	}	
+	else
+	{
+		sprintf(path, ".\\%s", "x.dat");
+		
+	}
+		
+	printf("%s\n", path);
+
+	if ((f = fopen(path, "rb")) == NULL) 
+	{
+		fprintf(stderr, "cannot open data file!..\n");
+		exit(EXIT_FAILURE);
+	}
+
+	printf("Ok\n");
+
+
+	fclose(f);
+}
+
+void CreateProcessExample(void)
+{
+	char szPath[] = "menu.exe";
+	STARTUPINFO si = { sizeof(STARTUPINFO) };
+	PROCESS_INFORMATION pa;
+
+	if (!CreateProcess("menu.exe", szPath, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pa))
+	{
+		ExitSys("CreateProcess");
+	}
+		
+
+	printf("Ok-K\n");
+}
+
+
+
+
 
 
 
