@@ -7,10 +7,13 @@ void ExitSys(LPCSTR lpszMsg);
 int main(void)
 {
 	char szPath[] = "..\\x64\\Debug\\Prog2.exe arg1 arg2";
+	char env[] = "ENV1=1\0ENV2=2\0";
+
 	STARTUPINFO si = { sizeof(STARTUPINFO) };
 	PROCESS_INFORMATION pa;
 
-	if (!CreateProcess(NULL, szPath, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pa))
+	// 8th parameter -> Inherit the current director from Prog1
+	if (!CreateProcess(NULL, szPath, NULL, NULL, TRUE, 0, env, NULL, &si, &pa)) 
 	{
 		ExitSys("CreateProcess");
 	}

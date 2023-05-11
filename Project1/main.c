@@ -229,8 +229,11 @@ void DateTime_Example(void)
 
 void GetCurrentDirectory_Example(int argc, char* argv[])
 {
-	char cwd[MAX_PATH];
-	GetCurrentDirectory(MAX_PATH, cwd);
+	char cwd[1024];
+	if (!GetCurrentDirectory(1024, cwd))
+	{
+		ExitSys("GetCurrentDirectory");
+	}
 	printf("%s\n", cwd);
 }
 
