@@ -24,7 +24,6 @@ void SetEnvironmentVariable_Example(void);
 void putenv_Exampe(void);
 void GetEnvironmentString_Example(void);
 void getenv_Example(void);
-void CreateProcessExample(void);
 
 
 
@@ -57,7 +56,6 @@ int main(int argc, char *argv[])
 	//putenv_Exampe();
 	//GetEnvironmentString_Example();
 	//getenv_Example();
-	CreateProcessExample();
 
 
 	return 0;
@@ -340,21 +338,6 @@ void getenv_Example(void)
 
 
 	fclose(f);
-}
-
-void CreateProcessExample(void)
-{
-	char szPath[] = "menu.exe";
-	STARTUPINFO si = { sizeof(STARTUPINFO) };
-	PROCESS_INFORMATION pa;
-
-	if (!CreateProcess("menu.exe", szPath, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pa))
-	{
-		ExitSys("CreateProcess");
-	}
-		
-
-	printf("Ok-K\n");
 }
 
 
