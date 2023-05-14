@@ -24,6 +24,7 @@ void SetEnvironmentVariable_Example(void);
 void putenv_Exampe(void);
 void GetEnvironmentString_Example(void);
 void getenv_Example(void);
+void ShellExecute_Example(void);
 
 
 
@@ -56,7 +57,7 @@ int main(int argc, char *argv[])
 	//putenv_Exampe();
 	//GetEnvironmentString_Example();
 	//getenv_Example();
-
+	ShellExecute_Example();
 
 	return 0;
 }
@@ -343,6 +344,16 @@ void getenv_Example(void)
 	fclose(f);
 }
 
+void ShellExecute_Example(void)
+{
+	HINSTANCE hInstance;
+
+	hInstance = ShellExecute(NULL, "open", "C:\\Users\\Duatepe\\Desktop\\abc.txt", NULL, NULL, SW_NORMAL);
+	if ((int)hInstance < 32)
+	{
+		ExitSys("ShellExecute");
+	}
+}
 
 
 
