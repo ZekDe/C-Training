@@ -1,0 +1,55 @@
+﻿  display_hexchar.c
+  main.c
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(76,35): warning C4133: 'function': incompatible types - from 'bool (__cdecl *)(const WIN32_FIND_DATA *,int)' to 'BOOL (__cdecl *)(const WIN32_FIND_DATA *,int)'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(87,22): error C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(84,6): warning C4101: 'i': unreferenced local variable
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(122,11): error C4996: 'freopen': This function or variable may be unsafe. Consider using freopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(202,6): error C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(219,8): error C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(235,1): warning C4027: function declared without formal parameter list
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(237,36): warning C4133: 'function': incompatible types - from 'char [1024]' to 'LPWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(250,46): warning C4133: 'function': incompatible types - from 'char [5]' to 'LPCWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(250,51): warning C4133: 'function': incompatible types - from 'char [4096]' to 'LPWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(264,36): warning C4133: 'function': incompatible types - from 'char [5]' to 'LPCWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(264,45): warning C4133: 'function': incompatible types - from 'char [6]' to 'LPCWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(269,46): warning C4133: 'function': incompatible types - from 'char [5]' to 'LPCWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(269,51): warning C4133: 'function': incompatible types - from 'char [4096]' to 'LPWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(287,13): error C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(299,39): warning C4133: '=': incompatible types - from 'LPWCH' to 'LPCH'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(326,13): error C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(328,3): error C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(332,3): error C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(338,11): error C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(318,8): warning C4101: 'env': unreferenced local variable
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(354,39): warning C4133: 'function': incompatible types - from 'char [5]' to 'LPCWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(354,79): warning C4133: 'function': incompatible types - from 'char [33]' to 'LPCWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(399,62): warning C4133: 'function': incompatible types - from 'char [1024]' to 'LPWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(430,9): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 3 has type 'const WCHAR *'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(430,9): message : consider using '%ls' in the format string
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(430,9): message : consider using '%lls' in the format string
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(430,9): message : consider using '%Ls' in the format string
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(430,9): message : consider using '%ws' in the format string
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(431,30): warning C4133: 'function': incompatible types - from 'const WCHAR [260]' to 'const char *'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(459,19): warning C4477: 'fprintf' : format string '%s' requires an argument of type 'char *', but variadic argument 2 has type 'LPTSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(459,19): message : consider using '%ls' in the format string
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(459,19): message : consider using '%lls' in the format string
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(459,19): message : consider using '%Ls' in the format string
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\main.c(459,19): message : consider using '%ws' in the format string
+  utils.c
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\utils.c(25,11): warning C4013: 'strchr' undefined; assuming extern returning int
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\utils.c(25,28): warning C4047: '=': 'char *' differs in levels of indirection from 'int'
+  walkdir.c
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\walkdir.c(16,31): warning C4133: 'function': incompatible types - from 'LPCSTR' to 'LPCWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\walkdir.c(22,34): warning C4133: 'function': incompatible types - from 'char [4]' to 'LPCWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\walkdir.c(24,38): warning C4133: 'function': incompatible types - from 'char [14]' to 'LPCWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\walkdir.c(36,27): warning C4133: 'function': incompatible types - from 'WCHAR [260]' to 'const char *'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\walkdir.c(36,58): warning C4133: 'function': incompatible types - from 'WCHAR [260]' to 'const char *'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\walkdir.c(43,35): warning C4133: 'function': incompatible types - from 'WCHAR [260]' to 'LPCSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\walkdir.c(48,33): warning C4133: 'function': incompatible types - from 'char [3]' to 'LPCWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\walkdir.c(74,40): warning C4133: 'function': incompatible types - from 'char [260]' to 'LPWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\walkdir.c(83,30): warning C4133: 'function': incompatible types - from 'char [260]' to 'LPCWSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\walkdir.c(101,19): warning C4477: 'fprintf' : format string '%s' requires an argument of type 'char *', but variadic argument 2 has type 'LPTSTR'
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\walkdir.c(101,19): message : consider using '%ls' in the format string
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\walkdir.c(101,19): message : consider using '%lls' in the format string
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\walkdir.c(101,19): message : consider using '%Ls' in the format string
+D:\_Videos\ZoomKayıt\ileriCSystemProg\System-Programming-Training.git\Project1\walkdir.c(101,19): message : consider using '%ws' in the format string

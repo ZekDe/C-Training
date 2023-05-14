@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "utils.h"
 #include <Psapi.h>
+#include <tchar.h>
 
 #define IS_FILE()	(wfd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? "<DIR>" : ""
 
@@ -358,6 +359,7 @@ void ShellExecute_Example(void)
 	}
 }
 
+// compatible for unicode
 void ListModuleOfProcesses_Example(void)
 {
 	DWORD dwProcessIds[1000];
@@ -365,12 +367,12 @@ void ListModuleOfProcesses_Example(void)
 	DWORD i, k;
 	HANDLE hProcess;
 	HMODULE hModules[1000];
-	char szModuleName[1024];
+	TCHAR szModuleName[1024];
 	DWORD listedCount = 0;
 
 	if (!EnumProcesses(dwProcessIds, sizeof(dwProcessIds), &dwNeeded))
 	{
-		ExitSys("EnumProcesses");
+		ExitSys(TEXT("EnumProcesses"));
 	}
 
 	dwProcessCount = dwNeeded / sizeof(DWORD);
@@ -383,12 +385,13 @@ void ListModuleOfProcesses_Example(void)
 			continue;
 		}
 
-		// get the modules of process
+		// get the modules of process - 32bit process cannot read 64bit process memory area 
+		// and this function might be failed
 		if (!EnumProcessModules(hProcess, hModules, sizeof(hModules), &dwNeeded))
 		{
 			continue;
 		}
-
+	
 		++listedCount;
 		dwModuleCount = dwNeeded / sizeof(DWORD);
 
@@ -399,23 +402,23 @@ void ListModuleOfProcesses_Example(void)
 			{
 				continue;
 			}
-			if (k == 0) // First one is always executable file
+			if (k == 0) // First one is always executable file(.exe)
 			{
-				printf("%s%s", szModuleName, dwModuleCount > 1 ? ": " : "");
+				_tprintf(TEXT("%s%s"), szModuleName, dwModuleCount > 1 ? TEXT(": ") : TEXT(""));
 			}
-			else if (k != 1) // Now print modules
+			else if (k != 1) // Now print modules 
 			{
-				printf(", ");
+				_tprintf(TEXT(", "));
 			}
 
-			printf("%s", szModuleName);
+			_tprintf(TEXT("%s"), szModuleName);
 		}
 
-		printf("\n\n");
+		_tprintf(TEXT("\n\n"));
 		CloseHandle(hProcess);
 	}
 
-	printf("%lu process Ids listed...\n", listedCount);
+	_tprintf(TEXT("%lu process Ids listed...\n"), listedCount);
 }
 
 
@@ -447,15 +450,15 @@ void APP_ErrorHandler(void)
 }
 
 
-static void ExitSys(LPCSTR lpszMsg)
+static void ExitSys(LPCTSTR lpszMsg)
 {
 	DWORD dwLastError = GetLastError();
 	LPTSTR lpszErr;
 
 	if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, dwLastError,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpszErr, 0, NULL))
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPCTSTR)&lpszErr, 0, NULL))
 	{
-		fprintf(stderr, "%s: %s\n", lpszMsg, lpszErr);
+		_ftprintf(stderr, TEXT("%s: %s\n"), lpszMsg, lpszErr);
 		LocalFree(lpszErr);
 	}
 
