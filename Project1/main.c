@@ -5,6 +5,7 @@
 #include "display_hexchar.h"
 #include <stdbool.h>
 #include "utils.h"
+#include <Psapi.h>
 
 #define IS_FILE()	(wfd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? "<DIR>" : ""
 
@@ -25,6 +26,7 @@ void putenv_Exampe(void);
 void GetEnvironmentString_Example(void);
 void getenv_Example(void);
 void ShellExecute_Example(void);
+void ListModuleOfProcesses_Example(void);
 
 
 
@@ -57,7 +59,8 @@ int main(int argc, char *argv[])
 	//putenv_Exampe();
 	//GetEnvironmentString_Example();
 	//getenv_Example();
-	ShellExecute_Example();
+	//ShellExecute_Example();
+	ListModuleOfProcesses_Example();
 
 	return 0;
 }
@@ -353,6 +356,66 @@ void ShellExecute_Example(void)
 	{
 		ExitSys("ShellExecute");
 	}
+}
+
+void ListModuleOfProcesses_Example(void)
+{
+	DWORD dwProcessIds[1000];
+	DWORD dwNeeded, dwProcessCount, dwModuleCount;
+	DWORD i, k;
+	HANDLE hProcess;
+	HMODULE hModules[1000];
+	char szModuleName[1024];
+	DWORD listedCount = 0;
+
+	if (!EnumProcesses(dwProcessIds, sizeof(dwProcessIds), &dwNeeded))
+	{
+		ExitSys("EnumProcesses");
+	}
+
+	dwProcessCount = dwNeeded / sizeof(DWORD);
+
+	for (i = 0; i < dwProcessCount; ++i)
+	{
+		// get the process
+		if ((hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, dwProcessIds[i])) == NULL)
+		{
+			continue;
+		}
+
+		// get the modules of process
+		if (!EnumProcessModules(hProcess, hModules, sizeof(hModules), &dwNeeded))
+		{
+			continue;
+		}
+
+		++listedCount;
+		dwModuleCount = dwNeeded / sizeof(DWORD);
+
+		//get the name of modules
+		for (k = 0; k < dwModuleCount; ++k)
+		{
+			if (!GetModuleBaseName(hProcess, hModules[k], szModuleName, 1024))
+			{
+				continue;
+			}
+			if (k == 0) // First one is always executable file
+			{
+				printf("%s%s", szModuleName, dwModuleCount > 1 ? ": " : "");
+			}
+			else if (k != 1) // Now print modules
+			{
+				printf(", ");
+			}
+
+			printf("%s", szModuleName);
+		}
+
+		printf("\n\n");
+		CloseHandle(hProcess);
+	}
+
+	printf("%lu process Ids listed...\n", listedCount);
 }
 
 
