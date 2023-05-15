@@ -9,7 +9,7 @@
 #include <tchar.h>
 
 #define IS_FILE()	(wfd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? "<DIR>" : ""
-//
+
 /* Small Talk */
 void WalkDir_Example(int argc, char* argv[]);
 void DisplayHexChar_Example(void);
