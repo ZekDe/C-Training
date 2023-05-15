@@ -1,2 +1,2 @@
-# C-Training
-Play with Windows Api
+# Play with Windows Api
+
