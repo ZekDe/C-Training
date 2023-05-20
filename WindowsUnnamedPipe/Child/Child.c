@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 	HANDLE hReadPipe;
 	BOOL bResult;
 	DWORD dwRead;
-	int val;
+	int val;//
 
 	sscanf(argv[1], "%p", &hReadPipe);
 
