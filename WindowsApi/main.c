@@ -7,6 +7,8 @@
 #include "utils.h"
 #include <Psapi.h>
 #include <tchar.h>
+#include <stdarg.h>
+
 
 #define IS_FILE()	(wfd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? "<DIR>" : ""
 
@@ -34,6 +36,7 @@ void ListModuleOfProcesses_Example(void);
 int APP_DispMenu(void);
 bool Callback_WalkDir(const WIN32_FIND_DATA* wfd, int level);
 void APP_ErrorHandler(void);
+static printerr(const char* format, ...);
 static void ExitSys(LPCSTR lpszMsg);
 
 // different approach for error handling
@@ -44,7 +47,6 @@ bool o_err_hstdout;
 
 int main(int argc, char *argv[])
 {
-	
 	//WalkDir_Example(argc, argv);
 	//DisplayHexChar_Example();
 	//GetStdHandle_Example();
@@ -57,11 +59,12 @@ int main(int argc, char *argv[])
 	//GetCurrentDirectory_Example();
 	//GetEnvironmentVariable_Example();
 	//SetEnvironmentVariable_Example();
-	//putenv_Exampe();
+	putenv_Exampe();
 	//GetEnvironmentString_Example();
 	//getenv_Example();
 	//ShellExecute_Example();
-	ListModuleOfProcesses_Example();
+	//ListModuleOfProcesses_Example();
+	
 
 	return 0;
 }
@@ -122,7 +125,7 @@ void Redirect_stdout_Example(void)
 
 	if ((f = freopen("test.txt", "w", stdout)) == NULL) // stdout has been closed now
 	{
-		fprintf(stderr, "freopen!..\n");
+		fprintf(stderr, "freopen\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -287,10 +290,11 @@ void putenv_Exampe(void)
 
 	if ((env = getenv("CITY")) == NULL) 
 	{
-		fprintf(stderr, "CITY!..\n");
+		printerr("CITY");
+		//fprintf(stderr, "CITY!..\n");
 		exit(EXIT_FAILURE);
 	}
-	printf("%s",env);
+	printf("%s", env);
 }
 
 void GetEnvironmentString_Example(void)
@@ -449,6 +453,18 @@ void APP_ErrorHandler(void)
 	o_err_hstdout && (ExitSys("error stdout"), 0);
 }
 
+
+static printerr(const char* format, ...)
+{
+	va_list va;
+
+	va_start(va, format);
+
+	fprintf(stderr, "Error: ");
+	vfprintf(stderr, format, va);
+
+	va_end(va);
+}
 
 static void ExitSys(LPCTSTR lpszMsg)
 {
