@@ -30,6 +30,7 @@ void GetEnvironmentString_Example(void);
 void getenv_Example(void);
 void ShellExecute_Example(void);
 void ListModuleOfProcesses_Example(void);
+void MemoryMappedFiles_Example(void);
 
 
 
@@ -59,12 +60,12 @@ int main(int argc, char *argv[])
 	//GetCurrentDirectory_Example();
 	//GetEnvironmentVariable_Example();
 	//SetEnvironmentVariable_Example();
-	putenv_Exampe();
+	//putenv_Exampe();
 	//GetEnvironmentString_Example();
 	//getenv_Example();
 	//ShellExecute_Example();
 	//ListModuleOfProcesses_Example();
-	
+	MemoryMappedFiles_Example();
 
 	return 0;
 }
@@ -423,6 +424,42 @@ void ListModuleOfProcesses_Example(void)
 	}
 
 	_tprintf(TEXT("%lu process Ids listed...\n"), listedCount);
+}
+
+void MemoryMappedFiles_Example(void)
+{
+	HANDLE hFile;
+	HANDLE hFileMapping;
+	LPVOID pvAddr;
+	LPSTR str;
+	int i;
+	char text[] = "01234567890123456789";
+
+	if ((hFile = CreateFile("test.txt", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL)) == INVALID_HANDLE_VALUE)
+		ExitSys("CreateFile");
+
+	// mapped the test.txt to memory
+	if ((hFileMapping = CreateFileMapping(hFile, NULL, PAGE_READWRITE, 0, 0/*mapped whole test file*/, NULL/*this time is NULL*/)) == NULL)
+		ExitSys("CreateFileMapping");
+
+	if ((pvAddr = MapViewOfFile(hFileMapping, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0/*from head of file*/, 0)) == NULL)
+		ExitSys("MapViewOfFile");
+
+	str = (LPSTR)pvAddr;
+
+	for (i = 0; str[i] != NULL; ++i)
+		putchar(str[i]);
+
+	putchar('\n');
+
+	str[i] = '\n';
+	memcpy(&str[i + 1], text, strlen(text));
+
+	UnmapViewOfFile(pvAddr);
+	CloseHandle(hFileMapping);
+	CloseHandle(hFile);
+
+	return 0;
 }
 
 

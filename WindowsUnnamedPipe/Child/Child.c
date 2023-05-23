@@ -11,13 +11,13 @@ int main(int argc, char *argv[])
 	DWORD dwRead;
 	int val;
 
-	sscanf(argv[1], "%p", &hReadPipe);
+	(void)sscanf(argv[1], "%p", &hReadPipe);
 
 	while (ReadFile(hReadPipe, &val, sizeof(int), &dwRead, NULL)) 
 	{
 		printf("%d ", val);
 		fflush(stdout);
-	}
+	} 
 
 	if (GetLastError() != ERROR_BROKEN_PIPE)
 		ExitSys("ReadFile");
