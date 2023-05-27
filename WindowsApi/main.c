@@ -8,6 +8,7 @@
 #include <Psapi.h>
 #include <tchar.h>
 #include <stdarg.h>
+#include <stdlib.h>
 
 
 #define IS_FILE()	(wfd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? "<DIR>" : ""
@@ -31,6 +32,7 @@ void getenv_Example(void);
 void ShellExecute_Example(void);
 void ListModuleOfProcesses_Example(void);
 void MemoryMappedFiles_Example(void);
+void Thread_Example(void);
 
 
 
@@ -65,7 +67,10 @@ int main(int argc, char *argv[])
 	//getenv_Example();
 	//ShellExecute_Example();
 	//ListModuleOfProcesses_Example();
-	MemoryMappedFiles_Example();
+	//MemoryMappedFiles_Example();
+	Thread_Example();
+
+
 
 	return 0;
 }
@@ -462,8 +467,51 @@ void MemoryMappedFiles_Example(void)
 	return 0;
 }
 
+DWORD WINAPI ThreadProc1(LPVOID lpvParam);
+DWORD WINAPI ThreadProc2(LPVOID lpvParam);
 
+void Thread_Example(void)
+{
+	HANDLE hThread1, hThread2;
+	DWORD dwThreadID1, dwThreadID2;
 
+	if ((hThread1 = CreateThread(NULL, 0, ThreadProc1, NULL, 0, &dwThreadID1)) == NULL)
+		ExitSys("CreateThread");
+
+	if ((hThread2 = CreateThread(NULL, 0, ThreadProc2, NULL, 0, &dwThreadID2)) == NULL)
+		ExitSys("CreateThread");
+
+	WaitForSingleObject(hThread1, INFINITE);
+	WaitForSingleObject(hThread2, 1000);
+
+	printf("Threads finished...\n");
+}
+
+DWORD WINAPI ThreadProc1(LPVOID lpvParam)
+{
+	int i;
+
+	for (i = 0; i < 5; ++i) {
+		printf("ThreadProc1: %d\n", i);
+		Sleep(100);
+	}
+	// if last thread is completed, process is terminated
+
+	return 0;
+}
+
+DWORD WINAPI ThreadProc2(LPVOID lpvParam)
+{
+	int i;
+
+	for (i = 0; i < 5; ++i) {
+		printf("ThreadProc2: %d\n", i);
+		Sleep(500);
+	}
+	// if last thread is completed, process is terminated
+
+	return 0;
+}
 
 
 
