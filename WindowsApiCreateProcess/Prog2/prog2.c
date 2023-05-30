@@ -1,15 +1,30 @@
 #include <stdio.h>
 #include <Windows.h>
+#include <time.h>
 
+#define SHARED_MEMORY_NAME		"MySharedMemoryTest"
+#define MUTEX_NAME				"MyMutexTest"
+
+void CreateProcess_Example(void);
 void GetEnvironmentString_Example(void);
+void Mutex_Example(void);
 
 void ExitSys(LPCSTR lpszMsg);
 
 int main(int argc, char *argv[])
 {
+	//CreateProcess_Example(argc, argv); //Prog1
+	//GetEnvironmentString_Example();
+	Mutex_Example();
 
+
+	return 0;
+}
+
+void CreateProcess_Example(int argc, char* argv[])
+{
 	char cwd[1024];
-	if(!GetCurrentDirectory(1024, cwd))
+	if (!GetCurrentDirectory(1024, cwd))
 	{
 		ExitSys("GetCurrentDirectory");
 	}
@@ -20,10 +35,6 @@ int main(int argc, char *argv[])
 	{
 		printf("arg[%d] = %s\n", i, argv[i]);
 	}
-
-	GetEnvironmentString_Example();
-
-	return 0;
 }
 
 void GetEnvironmentString_Example(void)
@@ -42,6 +53,45 @@ void GetEnvironmentString_Example(void)
 		envStr += strlen(envStr) + 1;
 	}
 
+}
+
+void Mutex_Example(void)
+{
+	HANDLE hFileMapping;
+	HANDLE hMutex;
+	LPVOID pvAddr;
+	int* pi;
+	int i;
+
+	srand(time(NULL));
+
+	if ((hFileMapping = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 4096, SHARED_MEMORY_NAME)) == NULL)
+		ExitSys("CreateFileMapping");
+
+	if ((pvAddr = MapViewOfFile(hFileMapping, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 4096)) == NULL)
+		ExitSys("MapViewOfFile");
+
+	if ((hMutex = CreateMutex(NULL, FALSE, MUTEX_NAME)) == NULL)
+		ExitSys("CreateMutex");
+
+	printf("Press ENTER to start...\n");
+	getchar();
+
+	pi = (int*)pvAddr;
+
+	for (i = 0; i < 1000000; ++i) {
+		WaitForSingleObject(hMutex, INFINITE);
+		++* pi;
+		ReleaseMutex(hMutex);
+	}
+
+	printf("Press ENTER to continue...\n");
+	getchar();
+	printf("Count = %d\n", *pi);
+
+	CloseHandle(hMutex);
+	UnmapViewOfFile(pvAddr);
+	CloseHandle(hFileMapping);
 }
 
 void ExitSys(LPCSTR lpszMsg)

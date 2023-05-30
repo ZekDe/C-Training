@@ -33,6 +33,7 @@ void ShellExecute_Example(void);
 void ListModuleOfProcesses_Example(void);
 void MemoryMappedFiles_Example(void);
 void Thread_Example(void);
+void Concurrency_Example(void);
 
 
 
@@ -68,7 +69,8 @@ int main(int argc, char *argv[])
 	//ShellExecute_Example();
 	//ListModuleOfProcesses_Example();
 	//MemoryMappedFiles_Example();
-	Thread_Example();
+	//Thread_Example();
+	Concurrency_Example();
 
 
 
@@ -472,45 +474,142 @@ DWORD WINAPI ThreadProc2(LPVOID lpvParam);
 
 void Thread_Example(void)
 {
-	HANDLE hThread1, hThread2;
-	DWORD dwThreadID1, dwThreadID2;
+	HANDLE hThread[2];
+	DWORD dwThreadID[2];
+	DWORD dwExitCode = 0;
+	char* str = NULL;
+	char* str1 = NULL;
 
-	if ((hThread1 = CreateThread(NULL, 0, ThreadProc1, NULL, 0, &dwThreadID1)) == NULL)
+	if ((str = malloc(64)) == NULL) {
+		ExitSys("memory allocation");
+	}
+	if ((str1 = malloc(64)) == NULL) {
+		ExitSys("memory allocation");
+	}
+
+	sprintf(str, "Thread1");
+	if ((hThread[0] = CreateThread(NULL, 0, ThreadProc1, str, 0, &dwThreadID[0])) == NULL)
+		ExitSys("CreateThread");
+	 
+	sprintf(str1, "Thread2");
+	if ((hThread[1] = CreateThread(NULL, 0, ThreadProc2, str1, 0, &dwThreadID[1])) == NULL)
 		ExitSys("CreateThread");
 
-	if ((hThread2 = CreateThread(NULL, 0, ThreadProc2, NULL, 0, &dwThreadID2)) == NULL)
-		ExitSys("CreateThread");
+	// No equal function in linux, pthread_join is used for that.
+	WaitForMultipleObjects(2, hThread, FALSE/*any thread */, INFINITE);
 
-	WaitForSingleObject(hThread1, INFINITE);
-	WaitForSingleObject(hThread2, 1000);
+	if (!GetExitCodeThread(hThread[0], &dwExitCode))
+		ExitSys("GetExitCodeThread");
 
-	printf("Threads finished...\n");
+	printf("Thread-2 has been finished with exit code %lu\n", (unsigned long)dwExitCode);
+
 }
 
 DWORD WINAPI ThreadProc1(LPVOID lpvParam)
 {
-	int i;
+	char* str = (char*)lpvParam;
+	printf("ThreadProc1 Param: %s\n", str);
 
-	for (i = 0; i < 5; ++i) {
+	for (int i = 0; i < 5; ++i) {
 		printf("ThreadProc1: %d\n", i);
-		Sleep(100);
+		Sleep(500);
 	}
-	// if last thread is completed, process is terminated
 
-	return 0;
+	free(str);
+	return 100;
 }
 
 DWORD WINAPI ThreadProc2(LPVOID lpvParam)
 {
-	int i;
+	char* str1 = (char*)lpvParam;
+	printf("ThreadProc2 Param: %s\n", str1);
 
-	for (i = 0; i < 5; ++i) {
+	for (int i = 0; i < 10; ++i) {
 		printf("ThreadProc2: %d\n", i);
 		Sleep(500);
 	}
-	// if last thread is completed, process is terminated
 
-	return 0;
+	free(str1);
+
+	return 200;
+}
+
+DWORD WINAPI ThreadProc3(LPVOID lpvParam);
+DWORD WINAPI ThreadProc4(LPVOID lpvParam);
+
+// mutex can be used for communication between process, 
+CRITICAL_SECTION g_flag;
+int g_cnt;
+void Concurrency_Example(void)
+{
+	HANDLE hThread[2];
+	DWORD dwThreadID[2];
+	DWORD dwExitCode = 0;
+	char* str = NULL;
+	char* str1 = NULL;
+
+	if ((str = malloc(64)) == NULL) {
+		ExitSys("memory allocation");
+	}
+	if ((str1 = malloc(64)) == NULL) {
+		ExitSys("memory allocation");
+	}
+
+	InitializeCriticalSection(&g_flag);
+
+	sprintf(str, "Thread3");
+	if ((hThread[0] = CreateThread(NULL, 0, ThreadProc3, str, 0, &dwThreadID[0])) == NULL)
+		ExitSys("CreateThread");
+
+	sprintf(str1, "Thread4");
+	if ((hThread[1] = CreateThread(NULL, 0, ThreadProc4, str1, 0, &dwThreadID[1])) == NULL)
+		ExitSys("CreateThread");
+
+	// No equal function in linux, pthread_join is used for that.
+	WaitForMultipleObjects(2, hThread, TRUE/*any thread */, INFINITE);
+
+	if (!GetExitCodeThread(hThread[0], &dwExitCode))
+		ExitSys("GetExitCodeThread");
+
+	DeleteCriticalSection(&g_flag);
+
+	printf("%d\n", g_cnt);
+
+	printf("Thread-2 has been finished with exit code %lu\n", (unsigned long)dwExitCode);
+
+}
+
+DWORD WINAPI ThreadProc3(LPVOID lpvParam)
+{
+	char* str = (char*)lpvParam;
+	printf("ThreadProc3 Param: %s\n", str);
+
+	for (int i = 0; i < 1000; ++i) {
+		EnterCriticalSection(&g_flag);
+		++g_cnt;
+		LeaveCriticalSection(&g_flag);
+	}
+	
+	free(str);
+	return 100;
+}
+
+DWORD WINAPI ThreadProc4(LPVOID lpvParam)
+{
+	char* str1 = (char*)lpvParam;
+	printf("ThreadProc4 Param: %s\n", str1);
+
+	
+	for (int i = 0; i < 1000; ++i) {
+		EnterCriticalSection(&g_flag);
+		++g_cnt;
+		LeaveCriticalSection(&g_flag);
+	}
+	
+
+	free(str1);
+
+	return 200;
 }
 
 
