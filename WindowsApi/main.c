@@ -33,7 +33,8 @@ void ShellExecute_Example(void);
 void ListModuleOfProcesses_Example(void);
 void MemoryMappedFiles_Example(void);
 void Thread_Example(void);
-void Concurrency_Example(void);
+void CriticalSection_Example(void);
+void ConsumerProducer_Example(void);
 
 
 
@@ -70,7 +71,9 @@ int main(int argc, char *argv[])
 	//ListModuleOfProcesses_Example();
 	//MemoryMappedFiles_Example();
 	//Thread_Example();
-	Concurrency_Example();
+	//CriticalSection_Example();
+	ConsumerProducer_Example();
+
 
 
 
@@ -540,7 +543,7 @@ DWORD WINAPI ThreadProc4(LPVOID lpvParam);
 // mutex can be used for communication between process, 
 CRITICAL_SECTION g_flag;
 int g_cnt;
-void Concurrency_Example(void)
+void CriticalSection_Example(void)
 {
 	HANDLE hThread[2];
 	DWORD dwThreadID[2];
@@ -612,7 +615,77 @@ DWORD WINAPI ThreadProc4(LPVOID lpvParam)
 	return 200;
 }
 
+DWORD WINAPI ThreadProducer(LPVOID lpvParam);
+DWORD WINAPI ThreadConsumer(LPVOID lpvParam);
 
+HANDLE g_hSemProducer;
+HANDLE g_hSemConsumer;
+int g_shared;
+
+void ConsumerProducer_Example(void)
+{
+	HANDLE hThreadProducer, hThreadConsumer;
+	DWORD dwThreadIDProducer, dwThreadIDConsumer;
+
+	srand(time(NULL));
+
+	if ((g_hSemProducer = CreateSemaphore(NULL, 1, 1, NULL)) == NULL)
+		ExitSys("CreateSemaphore");
+
+	if ((g_hSemConsumer = CreateSemaphore(NULL, 0, 1, NULL)) == NULL)
+		ExitSys("CreateSemaphore");
+
+	if ((hThreadProducer = CreateThread(NULL, 0, ThreadProducer, NULL, 0, &dwThreadIDProducer)) == NULL)
+		ExitSys("CreateThread");
+
+	if ((hThreadConsumer = CreateThread(NULL, 0, ThreadConsumer, NULL, 0, &dwThreadIDConsumer)) == NULL)
+		ExitSys("CreateThread");
+
+	WaitForSingleObject(hThreadProducer, INFINITE);
+	WaitForSingleObject(hThreadConsumer, INFINITE);
+
+	CloseHandle(g_hSemProducer);
+	CloseHandle(g_hSemConsumer);
+}
+
+
+DWORD WINAPI ThreadProducer(LPVOID lpvParam)
+{
+	int i;
+
+	i = 0;
+	for (;;) {
+		Sleep(rand() % 300);
+
+		WaitForSingleObject(g_hSemProducer, INFINITE);
+		g_shared = i;
+		ReleaseSemaphore(g_hSemConsumer, 1, NULL);
+
+		++i;
+		if (i == 100)
+			break;
+	}
+	return 0;
+}
+
+DWORD WINAPI ThreadConsumer(LPVOID lpvParam)
+{
+	int val;
+
+	for (;;) {
+		WaitForSingleObject(g_hSemConsumer, INFINITE);
+		val = g_shared;
+		ReleaseSemaphore(g_hSemProducer, 1, NULL);
+
+		Sleep(rand() % 200);
+		printf("%d ", val);
+		fflush(stdout);
+		if (val == 99)
+			break;
+	}
+	putchar('\n');
+	return 0;
+}
 
 
 bool Callback_WalkDir(const WIN32_FIND_DATA* wfd, int level)
