@@ -10,6 +10,8 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+#define NTHREADS				30
+#define MAX_THREAD_NAME			32
 
 #define IS_FILE()	(wfd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? "<DIR>" : ""
 
@@ -35,6 +37,7 @@ void MemoryMappedFiles_Example(void);
 void Thread_Example(void);
 void CriticalSection_Example(void);
 void ConsumerProducer_Example(void);
+void ReadWriteLock_Example(void);
 
 
 
@@ -72,7 +75,8 @@ int main(int argc, char *argv[])
 	//MemoryMappedFiles_Example();
 	//Thread_Example();
 	//CriticalSection_Example();
-	ConsumerProducer_Example();
+	//ConsumerProducer_Example();
+	ReadWriteLock_Example();
 
 
 
@@ -90,6 +94,7 @@ void WalkDir_Example(int argc, char* argv[])
 	}
 	WalkDir(argv[1], Callback_WalkDir);
 }
+/**************************************************************************************/
 
 void DisplayHexChar_Example(void)
 {
@@ -110,6 +115,7 @@ void DisplayHexChar_Example(void)
 
 	fclose(f);
 }
+/**************************************************************************************/
 
 void GetStdHandle_Example(void)
 {
@@ -128,6 +134,7 @@ void GetStdHandle_Example(void)
 	if (!WriteFile(hstdout, buf, dw_read, &dw_write, NULL))
 		ExitSys("WriteFile");
 }
+/**************************************************************************************/
 
 void Redirect_stdout_Example(void)
 {
@@ -145,6 +152,7 @@ void Redirect_stdout_Example(void)
 
 	fclose(f);
 }
+/**************************************************************************************/
 
 void getchar_Example(void)
 {
@@ -159,6 +167,7 @@ void getchar_Example(void)
 	ch = getchar();
 	printf("%c\n", ch);
 }
+/**************************************************************************************/
 
 void fgetc_Example(void)
 {
@@ -171,12 +180,14 @@ void fgetc_Example(void)
 	}
 
 }
+/**************************************************************************************/
 
 void gets_s_Example(void)
 {
 	char s[50];
 	puts(my_gets_s(s, 50));
 }
+/**************************************************************************************/
 
 void Menu_Example(void)
 {
@@ -202,7 +213,7 @@ void Menu_Example(void)
 		}
 	}
 }
-
+/**************************************************************************************/
 
 int APP_DispMenu(void)
 {
@@ -222,6 +233,7 @@ int APP_DispMenu(void)
 
 	return option;
 }
+/**************************************************************************************/
 
 void DateTime_Example(void)
 {
@@ -244,7 +256,7 @@ void DateTime_Example(void)
 	}
 	
 }
-
+/**************************************************************************************/
 
 void GetCurrentDirectory_Example(int argc, char* argv[])
 {
@@ -255,7 +267,7 @@ void GetCurrentDirectory_Example(int argc, char* argv[])
 	}
 	printf("%s\n", cwd);
 }
-
+/**************************************************************************************/
 
 void GetEnvironmentVariable_Example(void)
 {
@@ -269,6 +281,7 @@ void GetEnvironmentVariable_Example(void)
 	
 	printf("%s\n", arr);
 }
+/**************************************************************************************/
 
 void SetEnvironmentVariable_Example(void)
 {
@@ -288,6 +301,7 @@ void SetEnvironmentVariable_Example(void)
 
 	printf("%s\n", arr);
 }
+/**************************************************************************************/
 
 void putenv_Exampe(void)
 {
@@ -307,6 +321,7 @@ void putenv_Exampe(void)
 	}
 	printf("%s", env);
 }
+/**************************************************************************************/
 
 void GetEnvironmentString_Example(void)
 {
@@ -324,6 +339,7 @@ void GetEnvironmentString_Example(void)
 	}
 
 }
+/**************************************************************************************/
 
 void getenv_Example(void)
 {
@@ -362,6 +378,7 @@ void getenv_Example(void)
 
 	fclose(f);
 }
+/**************************************************************************************/
 
 void ShellExecute_Example(void)
 {
@@ -373,6 +390,7 @@ void ShellExecute_Example(void)
 		ExitSys("ShellExecute");
 	}
 }
+/**************************************************************************************/
 
 // compatible for unicode
 void ListModuleOfProcesses_Example(void)
@@ -435,6 +453,7 @@ void ListModuleOfProcesses_Example(void)
 
 	_tprintf(TEXT("%lu process Ids listed...\n"), listedCount);
 }
+/**************************************************************************************/
 
 void MemoryMappedFiles_Example(void)
 {
@@ -472,6 +491,7 @@ void MemoryMappedFiles_Example(void)
 	return 0;
 }
 
+/**************************************************************************************/
 DWORD WINAPI ThreadProc1(LPVOID lpvParam);
 DWORD WINAPI ThreadProc2(LPVOID lpvParam);
 
@@ -537,6 +557,7 @@ DWORD WINAPI ThreadProc2(LPVOID lpvParam)
 	return 200;
 }
 
+/**************************************************************************************/
 DWORD WINAPI ThreadProc3(LPVOID lpvParam);
 DWORD WINAPI ThreadProc4(LPVOID lpvParam);
 
@@ -615,6 +636,7 @@ DWORD WINAPI ThreadProc4(LPVOID lpvParam)
 	return 200;
 }
 
+/**************************************************************************************/
 DWORD WINAPI ThreadProducer(LPVOID lpvParam);
 DWORD WINAPI ThreadConsumer(LPVOID lpvParam);
 
@@ -687,6 +709,74 @@ DWORD WINAPI ThreadConsumer(LPVOID lpvParam)
 	return 0;
 }
 
+/**************************************************************************************/
+DWORD WINAPI ThreadReadWriteLock(LPVOID lpvParam);
+void Read(LPCSTR lpszThreadName);
+void Write(LPCSTR lpszThreadName);
+
+SRWLOCK g_srwLock;
+
+void ReadWriteLock_Example(void)
+{
+	HANDLE hThreads[NTHREADS];
+	DWORD dwThreadIDs[NTHREADS];
+	int i;
+	LPCSTR lpszThreadName;
+
+	srand(time(NULL));
+
+	InitializeSRWLock(&g_srwLock);
+
+	for (i = 0; i < NTHREADS; ++i) {
+		if ((lpszThreadName = (LPCSTR)malloc(MAX_THREAD_NAME)) == NULL) {
+			fprintf(stderr, "Cannot allocate memory!..\n");
+			exit(EXIT_FAILURE);
+		}
+		sprintf(lpszThreadName, "Thread-%d", i + 1);
+
+		if ((hThreads[i] = CreateThread(NULL, 0, ThreadReadWriteLock, lpszThreadName, 0, &dwThreadIDs[i])) == NULL)
+			ExitSys("CreateThread");
+	}
+
+	WaitForMultipleObjects(NTHREADS, hThreads, TRUE, INFINITE);
+}
+
+DWORD __stdcall ThreadReadWriteLock(LPVOID lpvParam)
+{
+	int i;
+	LPCSTR lpszThreadName = (LPCSTR)lpvParam;
+
+	for (i = 0; i < 10; ++i) {
+		if (rand() % 2 == 0)
+			Write(lpvParam);
+		else
+			Read(lpvParam);
+	}
+
+	free(lpvParam);
+
+	return 0;
+}
+
+void Read(LPCSTR lpszThreadName)
+{
+	AcquireSRWLockShared(&g_srwLock);
+	printf("%s READING starts...\n", lpszThreadName);
+	Sleep(rand() % 50);
+	printf("%s READING ends...\n", lpszThreadName);
+	ReleaseSRWLockShared(&g_srwLock);
+}
+
+void Write(LPCSTR lpszThreadName)
+{
+	AcquireSRWLockExclusive(&g_srwLock);
+	printf("%s WRITING starts...\n", lpszThreadName);
+	Sleep(rand() % 50);
+	printf("%s WRINTING ends...\n", lpszThreadName);
+	ReleaseSRWLockExclusive(&g_srwLock);
+}
+
+/**************************************************************************************/
 
 bool Callback_WalkDir(const WIN32_FIND_DATA* wfd, int level)
 {

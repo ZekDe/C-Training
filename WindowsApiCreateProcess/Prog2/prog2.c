@@ -8,6 +8,7 @@
 void CreateProcess_Example(void);
 void GetEnvironmentString_Example(void);
 void Mutex_Example(void);
+void Consumer_Example(void); // Prog2 (Producer_Example)
 
 void ExitSys(LPCSTR lpszMsg);
 
@@ -15,7 +16,8 @@ int main(int argc, char *argv[])
 {
 	//CreateProcess_Example(argc, argv); //Prog1
 	//GetEnvironmentString_Example();
-	Mutex_Example();
+	//Mutex_Example();
+	Consumer_Example();
 
 
 	return 0;
@@ -92,6 +94,48 @@ void Mutex_Example(void)
 	CloseHandle(hMutex);
 	UnmapViewOfFile(pvAddr);
 	CloseHandle(hFileMapping);
+}
+
+void Consumer_Example(void)
+{
+	HANDLE hFileMapping;
+	LPVOID pvAddr;
+	int* pshared;
+	HANDLE hSemProducer;
+	HANDLE hSemConsumer;
+	int val;
+
+	srand(time(NULL));
+	if ((hSemProducer = CreateSemaphore(NULL, 1, 1, "MyProducerSemaphore")) == NULL)
+		ExitSys("CreateFileMapping");
+
+	if ((hSemConsumer = CreateSemaphore(NULL, 0, 1, "MyConsumerSemaphore")) == NULL)
+		ExitSys("CreateFileMapping");
+
+	// Create shared memory
+	if ((hFileMapping = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 4096, "MySharedMemory")) == NULL)
+		ExitSys("CreateFileMapping");
+
+	if ((pvAddr = MapViewOfFile(hFileMapping, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 4096)) == NULL)
+		ExitSys("MapViewOfFile");
+
+	pshared = (int*)pvAddr;
+
+	for (;;) {
+		WaitForSingleObject(hSemConsumer, INFINITE);
+		val = *pshared;
+		ReleaseSemaphore(hSemProducer, 1, NULL);
+		Sleep(rand() % 200);
+		printf("%d ", val), fflush(stdout);
+		if (val == 99)
+			break;
+	}
+	putchar('\n');
+
+	UnmapViewOfFile(pvAddr);
+	CloseHandle(hFileMapping);
+	CloseHandle(hSemProducer);
+	CloseHandle(hSemConsumer);
 }
 
 void ExitSys(LPCSTR lpszMsg)
