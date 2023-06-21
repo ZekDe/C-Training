@@ -38,7 +38,9 @@ void Thread_Example(void);
 void CriticalSection_Example(void);
 void ConsumerProducer_Example(void);
 void ReadWriteLock_Example(void);
-
+void ConditionVariables_Example(void);
+void Intrinsic_Example(void);
+void TLS_Example(void);
 
 
 int APP_DispMenu(void);
@@ -76,8 +78,10 @@ int main(int argc, char *argv[])
 	//Thread_Example();
 	//CriticalSection_Example();
 	//ConsumerProducer_Example();
-	ReadWriteLock_Example();
-
+	//ReadWriteLock_Example();
+	//ConditionVariables_Example();
+	//Intrinsic_Example();
+	TLS_Example();
 
 
 
@@ -788,10 +792,205 @@ bool Callback_WalkDir(const WIN32_FIND_DATA* wfd, int level)
 	return TRUE;
 }
 
+/**************************************************************************************/
+DWORD WINAPI Thread_CreateConditionVar1(LPVOID lpvParam);
+DWORD WINAPI Thread_CreateConditionVar2(LPVOID lpvParam);
+
+CRITICAL_SECTION g_cs;
+CONDITION_VARIABLE g_cond;
+int g_condition = 0;
+
+void ConditionVariables_Example(void)
+{
+	HANDLE hThread1, hThread2;
+	DWORD dwThreadId1, dwThreadId2;
+
+	InitializeCriticalSection(&g_cs);
+	InitializeConditionVariable(&g_cond);
+
+	if ((hThread1 = CreateThread(NULL, 0, Thread_CreateConditionVar1, NULL, 0, &dwThreadId1)) == NULL)
+		ExitSys("CreateThread");
+
+	if ((hThread2 = CreateThread(NULL, 0, Thread_CreateConditionVar2, NULL, 0, &dwThreadId2)) == NULL)
+		ExitSys("CreateThread");
+
+	printf("press enter\n");
+	getchar();
+
+	EnterCriticalSection(&g_cs);
+	g_condition = 1;
+	WakeAllConditionVariable(&g_cond);
+	LeaveCriticalSection(&g_cs);
+
+	printf("press enter\n");
+	getchar();
+
+	EnterCriticalSection(&g_cs);
+	g_condition = 2;
+	WakeAllConditionVariable(&g_cond);
+	LeaveCriticalSection(&g_cs);
+
+	printf("press enter to exit\n");
+	getchar();
+
+	WaitForSingleObject(hThread1, INFINITE);
+	WaitForSingleObject(hThread2, INFINITE);
+
+}
+
+
+DWORD WINAPI Thread_CreateConditionVar1(LPVOID lpvParam)
+{
+	EnterCriticalSection(&g_cs);
+	while (g_condition != 1)
+		if (!SleepConditionVariableCS(&g_cond, &g_cs, INFINITE))
+			ExitSys("SleepConditionVariableCS");
+	printf("condition 1 match\n");
+	LeaveCriticalSection(&g_cs);
+
+	return 0;
+}
+
+DWORD WINAPI Thread_CreateConditionVar2(LPVOID lpvParam)
+{
+	EnterCriticalSection(&g_cs);
+	while (g_condition != 2)
+		if (!SleepConditionVariableCS(&g_cond, &g_cs, INFINITE))
+			ExitSys("SleepConditionVariableCS");
+	printf("condition 2 match\n");
+	LeaveCriticalSection(&g_cs);
+	
+	return 0;
+}
+
+/**************************************************************************************/
+// consider simultaneous memory access
+// intrinsics(build-in funcions)
+
+DWORD __stdcall ThreadIntrinsic1(LPVOID lpvParam);
+DWORD __stdcall ThreadIntrinsic2(LPVOID lpvParam);
+
+long g_count;
+
+void Intrinsic_Example(void)
+{
+	HANDLE hThread1, hThread2;
+	DWORD dwThreadID1, dwThreadID2;
+
+	if ((hThread1 = CreateThread(NULL, 0, ThreadIntrinsic1, NULL, 0, &dwThreadID1)) == NULL)
+		ExitSys("CreateThread");
+
+	if ((hThread2 = CreateThread(NULL, 0, ThreadIntrinsic2, NULL, 0, &dwThreadID2)) == NULL)
+		ExitSys("CreateThread");
+
+	WaitForSingleObject(hThread1, INFINITE);
+	WaitForSingleObject(hThread2, INFINITE);
+
+	printf("%ld\n", g_count);
+}
+
+DWORD __stdcall ThreadIntrinsic1(LPVOID lpvParam)
+{
+	long i;
+
+	for (i = 0; i < 1000000; ++i)
+		_InterlockedIncrement(&g_count);
+
+	return 0;
+}
+
+DWORD __stdcall ThreadIntrinsic2(LPVOID lpvParam)
+{
+	long i;
+
+	for (i = 0; i < 1000000; ++i)
+		_InterlockedIncrement(&g_count);
+
+	return 0;
+}
+/**************************************************************************************/
+DWORD WINAPI ThreadTLS1(LPVOID lpvParam);
+DWORD WINAPI ThreadTLS2(LPVOID lpvParam);
+BOOL InitTls(int val, const char* buf);
+void Foo(void);
+
+DWORD g_tlsSlot;
+
+typedef struct tagSTATIC_DATA {
+	int val;
+	char buf[32];
+} STATIC_DATA;
+
+void TLS_Example(void)
+{
+	HANDLE hThread1, hThread2;
+	DWORD dwThreadID1, dwThreadID2;
+
+	// Create it for every single thread
+	if ((g_tlsSlot = TlsAlloc()) == TLS_OUT_OF_INDEXES)
+		ExitSys("TlsAlloc");
+
+	if ((hThread1 = CreateThread(NULL, 0, ThreadTLS1, NULL, 0, &dwThreadID1)) == NULL)
+		ExitSys("CreateThread");
+
+	if ((hThread2 = CreateThread(NULL, 0, ThreadTLS2, NULL, 0, &dwThreadID2)) == NULL)
+		ExitSys("CreateThread");
+
+	WaitForSingleObject(hThread1, INFINITE);
+	WaitForSingleObject(hThread2, INFINITE);
+
+	TlsFree(g_tlsSlot);
+}
+
+DWORD WINAPI ThreadTLS1(LPVOID lpvParam)
+{
+	if (!InitTls(100, "Thread-1"))
+		ExitSys("InitTls");
+
+	Foo();
+
+	return 0;
+}
+
+DWORD WINAPI ThreadTLS2(LPVOID lpvParam)
+{
+	if (!InitTls(200, "Thread-2"))
+		ExitSys("InitTls");
+
+	Foo();
+
+	return 0;
+}
+
+BOOL InitTls(int val, const char* buf)
+{
+	STATIC_DATA* psd;
+
+	if ((psd = (STATIC_DATA*)malloc(sizeof(STATIC_DATA))) == NULL)
+		return FALSE;
+
+	psd->val = val;
+	strcpy(psd->buf, buf);
+
+	if (!TlsSetValue(g_tlsSlot, psd))
+		return FALSE;
+
+	return TRUE;
+}
+
+void Foo(void)
+{
+	STATIC_DATA* psd;
+
+	if ((psd = (STATIC_DATA*)TlsGetValue(g_tlsSlot)) == NULL)
+		ExitSys("TlsGetValue");
+
+	printf("%d %s\n", psd->val, psd->buf);
+}
 
 
 
-
+/**************************************************************************************/
 
 void APP_ErrorHandler(void)
 {
