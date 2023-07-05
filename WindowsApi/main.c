@@ -41,6 +41,7 @@ void ReadWriteLock_Example(void);
 void ConditionVariables_Example(void);
 void Intrinsic_Example(void);
 void TLS_Example(void);
+void container_of_Example(void);
 
 
 int APP_DispMenu(void);
@@ -81,8 +82,8 @@ int main(int argc, char *argv[])
 	//ReadWriteLock_Example();
 	//ConditionVariables_Example();
 	//Intrinsic_Example();
-	TLS_Example();
-
+	//TLS_Example();
+	container_of_Example();
 
 
 	return 0;
@@ -988,6 +989,27 @@ void Foo(void)
 	printf("%d %s\n", psd->val, psd->buf);
 }
 
+
+void container_of_Example(void)
+{
+#define container_of(ptr, type, member)	 ((type *) ((char *) (ptr) - offsetof(type, member)))
+
+	struct SAMPLE {
+		int a;
+		char b;
+		int c;
+		char d;
+		double e;
+		int f;
+	};
+
+	struct SAMPLE s = { 10, 'x', 20, 'y', 12.4, 100 };
+	double* pd = &s.f;
+	struct SAMPLE* ps;
+
+	ps = container_of(pd, struct SAMPLE, f);
+	printf("%d, %f\n", ps->a, ps->e);
+}
 
 
 /**************************************************************************************/
